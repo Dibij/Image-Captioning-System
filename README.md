@@ -1,103 +1,85 @@
-# Image Captioning with Deep Learning
 
-This project generates captions for images using a deep learning model trained on the **COCO (Common Objects in Context) dataset**. The model combines **CNN (for image features)** and **LSTM/Transformer (for text generation)**.
+# 🖼️ Image Captioning System with Attention Mechanism
 
-![Example Output](example_output.jpg) *(Replace with your example image)*
-
-## Features
-- **Pre-trained CNN** (e.g., ResNet50, InceptionV3) for image feature extraction.
-- **Sequence Decoder** (LSTM/Transformer) for caption generation.
-- **COCO Dataset** support (train/val/test splits).
-- **BLEU Score Evaluation** for model performance.
-
-## Installation
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/yourusername/image-captioning.git
-   cd image-captioning
-Install dependencies:
-
-bash
-Copy
-pip install -r requirements.txt
-(Include tensorflow, pycocotools, numpy, Pillow in requirements.txt)
-
-Download COCO Dataset:
-
-bash
-Copy
-mkdir -p data/coco
-wget http://images.cocodataset.org/zips/train2017.zip -P data/coco/
-wget http://images.cocodataset.org/annotations/annotations_trainval2017.zip -P data/coco/
-unzip data/coco/train2017.zip -d data/coco/images/
-unzip data/coco/annotations_trainval2017.zip -d data/coco/annotations/
-Usage
-1. Training
-python
-Copy
-python train.py \
-  --image_dir data/coco/images/train2017 \
-  --ann_path data/coco/annotations/captions_train2017.json \
-  --batch_size 32 \
-  --epochs 20
-2. Inference (Generate Captions)
-python
-Copy
-python predict.py \
-  --model_path models/best_model.h5 \
-  --image_path samples/test_image.jpg
-Output:
-
-Copy
-"A person riding a motorcycle on a dirt road."
-3. Evaluation (BLEU Score)
-python
-Copy
-python evaluate.py \
-  --model_path models/best_model.h5 \
-  --ann_path data/coco/annotations/captions_val2017.json
-Project Structure
-Copy
-.
-├── data/                  # COCO dataset
-├── models/                # Saved models (.h5)
-├── src/
-│   ├── train.py           # Training script
-│   ├── predict.py         # Inference script
-│   └── evaluate.py        # BLEU score evaluation
-├── samples/               # Test images
-└── README.md
-Results
-Model	BLEU-1	BLEU-4
-CNN-LSTM	0.65	0.25
-CNN-Transformer	0.68	0.28
-(Replace with your actual metrics)
-
-References
-COCO Dataset
-
-Show, Attend and Tell (Paper)
-
-TensorFlow Tutorial
-
-License
-MIT
-
-Copy
+This project generates natural language captions for images using a deep learning model with an attention mechanism. It combines computer vision (InceptionV3 for feature extraction) with NLP (LSTM with attention) to describe what's happening in an image.
 
 ---
 
-### Key Customizations:
-1. **Replace Placeholders**:
-   - `yourusername/image-captioning` → Your GitHub repo URL.
-   - `example_output.jpg` → Add a real sample output.
-   - Update **Results** with your model’s BLEU scores.
+## 📁 Dataset
 
-2. **Add Your Scripts**:
-   - If you use Jupyter notebooks, link them under **Usage**.
+- **Source:** MS COCO Dataset (`captions_train2017.json`)
+- **Images Used:** First 1000 training images for demonstration purposes.
+- **Captions:** Preprocessed using NLTK (tokenization, punctuation removal, lowercasing).
 
-3. **Extras**:
-   - Add a **"Deployment"** section if you have a Flask/Streamlit app.
-   - Include **Troubleshooting** if needed.
+---
 
-Let me know if you’d like to add more details! 🖼️🤖
+## 🧠 Model Overview
+
+- **Feature Extractor:** InceptionV3 (pretrained on ImageNet)
+- **Caption Decoder:** LSTM with Bahdanau Attention
+- **Special Tokens:** `<start>`, `<end>`, `<unk>`
+- **Tokenization:** Keras Tokenizer
+- **Max Sequence Length:** Automatically calculated from data
+
+---
+
+## 🏗️ Architecture
+
+1. **Image Input:** Extracted features from InceptionV3.
+2. **Caption Input:** Tokenized and embedded sequences.
+3. **Attention Layer:** Bahdanau attention applied on image features.
+4. **LSTM Decoder:** Predicts the next word in the sequence.
+5. **Output:** Word probabilities over vocabulary.
+
+---
+
+## 🏋️‍♂️ Training
+
+- **Loss Function:** Sparse Categorical Crossentropy
+- **Optimizer:** Adam (LR = 0.0001)
+- **Epochs:** 10
+- **Batch Size:** 32
+- **Train/Val Split:** 80/20
+
+---
+
+## 📦 Output
+
+- **Model Saved As:** `attention_image_captioning_model.h5`
+- **Prediction Function:** Can caption any new image using the trained model.
+
+---
+
+## ▶️ Sample Prediction
+
+```python
+Generated caption: a group of people standing around a kitchen
+```
+
+(From image: `000000000009.jpg`)
+
+---
+
+## 🔧 Setup Instructions
+
+```bash
+pip install tensorflow pillow scikit-learn nltk
+python -m nltk.downloader punkt
+```
+
+Ensure your COCO dataset is properly placed under:
+
+```
+/content/coco_dataset/
+├── annotations/
+│   └── captions_train2017.json
+└── images/
+    └── train2017/
+```
+
+---
+
+## 📌 Notes
+
+- ⚠️ Only a small subset of COCO is used for demo/training.
+- Model structure can be improved further with beam search or Transformer-based encoders.
